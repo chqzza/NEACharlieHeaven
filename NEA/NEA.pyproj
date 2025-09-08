@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d97d27a6-f6ac-4fd8-be97-6cbda7345df2</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>learning.py</StartupFile>
+    <StartupFile>main_sequence.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>
@@ -24,7 +24,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="classes.py" />
-    <Compile Include="learning.py" />
+    <Compile Include="main_sequence.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
