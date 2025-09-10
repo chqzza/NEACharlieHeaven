@@ -2,7 +2,7 @@
 
 
 from re import S
-import pygame, sys
+import pygame, sys, pytmx
 from classes import *
 pygame.init()
 
