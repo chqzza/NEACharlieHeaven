@@ -13,11 +13,12 @@ class Button:
 
 
 class Character:
-    def __init__(self, name , x, y, hp, attack, defence, speed, colour):
+    def __init__(self, name , x, y, hp_max, attack, defence, speed, colour):
         self.name = name
         self.x = x
         self.y = y
-        self.hp = hp
+        self.hp_max = hp_max
+        self.hp = hp_max
         self.attack = attack
         self.defence = defence
         self.speed = speed
@@ -27,8 +28,8 @@ class Character:
         pygame.draw.circle(surface, self.colour, (int(self.x), int(self.y)), 10)
 
 class Player(Character):
-    def __init__(self, name, x, y, hp, attack, defence, speed, colour):
-        super().__init__(name, x, y, hp, attack, defence, speed, colour)
+    def __init__(self,*args):
+        super().__init__(*args)
         self.inventory = []
         self.equipped_items = []
         self.gold = 0
@@ -37,20 +38,22 @@ class Player(Character):
     def move(self, dt, k):
 
 
-        if k[pygame.K_w]:
+        if k[pygame.K_w] and self.y > 5:
             self.y -= self.speed * dt
-        if k[pygame.K_s]:
+        if k[pygame.K_s] and self.y < 715:
             self.y += self.speed * dt
-        if k[pygame.K_a]:
+        if k[pygame.K_a] and self.x > 5:
             self.x -= self.speed * dt
-        if k[pygame.K_d]:
+        if k[pygame.K_d] and self.x < 1275:
             self.x += self.speed * dt
+    
 
 
 
 class Enemy(Character):
-    def __init__(self, name, x, y, hp, attack, defence, speed, colour):
-        super().__init__(name, x, y, hp, attack, defence, speed, colour)
+    def __init__(self,*args):
+        super().__init__(*args)
+
 
 
     def track(self, tracking, dt):

@@ -61,10 +61,17 @@ def draw_buttons(surface, buttons_list):
             button.draw(SCREEN)
 
 def get_font(size):
-    return pygame.font.Font("fonts/path.ttf", size)
+    return pygame.font.Font("assets/fonts/path.ttf", size)
 
 
-
+def draw_health_bar(surface, x, y, current_health, max_health):
+    bar_width = 250
+    bar_height = 30
+    fill = (current_health / max_health) * bar_width
+    outline_rect = pygame.Rect(x, y, bar_width, bar_height)
+    fill_rect = pygame.Rect(x, y, fill, bar_height)
+    pygame.draw.rect(surface, (0, 255, 0), fill_rect)
+    pygame.draw.rect(surface, WHITE, outline_rect, 2)
 
 def handle_menu(num):
     if selected == 0:
@@ -79,33 +86,36 @@ def handle_menu(num):
 
 
 
-player = Player("Player", 640, 360,  100, 10, 5, 150, (14,60,190))
+player = Player("Player", 640, 360,  100, 10, 5, 600, (14,60,190))
 
-practice_enemy = Enemy("Practice Enemy", 100, 100, 50, 5, 2, 100,(255,0,0))
+practice_enemy = Enemy("Practice Enemy", 100, 100, 50, 5, 2, 500,(255,0,0))
 
 characters = [player, practice_enemy]    
 
 
 def play():
+    clock.tick(FPS)
+
     pygame.display.set_caption("Play")
     running = True
     while running:
+        SCREEN.fill(DARK_GRAY)
         for event in pygame.event.get():
              if event.type == pygame.QUIT:
                 running = False
              if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
-
+        draw_health_bar(SCREEN, 1020, 10, player.hp, player.hp_max)
         dt = clock.tick(FPS) / 1000
-        SCREEN.fill(DARK_GRAY)
+
         k = pygame.key.get_pressed()
         player.move(dt ,k)
 
         for character in characters:
              character.draw(SCREEN)
         practice_enemy.track(player, dt)
-       
+
         pygame.display.flip()
 
 
