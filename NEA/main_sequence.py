@@ -86,9 +86,9 @@ def handle_menu(num):
 
 
 
-player = Player("Player", 640, 360,  100, 10, 5, 600, (14,60,190))
+player = Player("Player", 640, 360,  100, 10, 5, 250, (14,60,190))
 
-practice_enemy = Enemy("Practice Enemy", 100, 100, 50, 5, 2, 500,(255,0,0))
+practice_enemy = Enemy("Practice Enemy", 100, 100, 50, 5, 2, 200,(255,0,0))
 
 characters = [player, practice_enemy]    
 
@@ -106,15 +106,25 @@ def play():
              if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+
         draw_health_bar(SCREEN, 1020, 10, player.hp, player.hp_max)
         dt = clock.tick(FPS) / 1000
 
+
         k = pygame.key.get_pressed()
         player.move(dt ,k)
+        player.meelee(k, SCREEN)
+        practice_enemy.track(player, dt)
+
 
         for character in characters:
+         
              character.draw(SCREEN)
-        practice_enemy.track(player, dt)
+             
+
+
+
+        
 
         pygame.display.flip()
 

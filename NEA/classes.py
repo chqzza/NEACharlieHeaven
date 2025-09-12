@@ -1,4 +1,4 @@
-import pygame
+import pygame, math
 
 
 class Button:
@@ -24,8 +24,9 @@ class Character:
         self.speed = speed
         self.colour = colour
     def draw(self, surface):
-        # Placeholder for drawing the character
+        pygame.draw.circle(surface, (0,0,0), (int(self.x), int(self.y)), 12)
         pygame.draw.circle(surface, self.colour, (int(self.x), int(self.y)), 10)
+
 
 class Player(Character):
     def __init__(self,*args):
@@ -46,6 +47,19 @@ class Player(Character):
             self.x -= self.speed * dt
         if k[pygame.K_d] and self.x < 1275:
             self.x += self.speed * dt
+
+
+    def weapon_rotate(self, SCREEN):
+        #Make code that rotates about the player in a circle 
+        weapon_x, weapon_y = self.x, self.y -6
+        weapon = (weapon_x, weapon_y, 40,10)
+        pygame.draw.rect(SCREEN, (255,0,0), weapon)
+
+    def meelee(self, k, SCREEN):
+        if k[pygame.K_SPACE]:
+            pygame.draw.circle(SCREEN, (255,255,0), (int(self.x), int(self.y)), 20, 2)
+            self.weapon_rotate(SCREEN)
+
     
 
 
@@ -60,9 +74,9 @@ class Enemy(Character):
         dx = tracking.x - self.x
         dy = tracking.y - self.y
         distance_squared = dx**2 + dy**2
-        distance = distance_squared ** 0.5
+        distance = distance_squared ** 0.5 
 
-        if distance < 400 and distance > 0:  
+        if distance < 400 and distance > 25:  
             nx = dx / distance
             ny = dy / distance
 
