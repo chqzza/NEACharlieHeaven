@@ -4,6 +4,7 @@
 from re import S
 import pygame, sys, pytmx
 from classes import *
+from random import randint
 pygame.init()
 
 SCREEN = pygame.display.set_mode((1280, 720))
@@ -87,10 +88,13 @@ def handle_menu(num):
 
 
 player = Player("Player", 640, 360,  100, 10, 5, 250, (14,60,190))
+enemies = []
+for i in range(100):
+    enemy = Enemy(f"Enemy {i+1}", randint(0,1280), randint(0,720), 50, 5, 2, 200,(255,0,0))
+    enemies.append(enemy)
 
-practice_enemy = Enemy("Practice Enemy", 100, 100, 50, 5, 2, 200,(255,0,0))
 
-characters = [player, practice_enemy]    
+characters = [player, enemies]    
 
 
 def play():
@@ -114,12 +118,12 @@ def play():
         k = pygame.key.get_pressed()
         player.move(dt ,k)
         player.meelee(k, SCREEN)
-        practice_enemy.track(player, dt)
+        for enemy in enemies:
+            enemy.track(player, dt, enemies)
+            enemy.draw(SCREEN)
 
 
-        for character in characters:
-         
-             character.draw(SCREEN)
+        player.draw(SCREEN)
              
 
 
