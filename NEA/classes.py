@@ -2,6 +2,7 @@ from calendar import c
 from msvcrt import kbhit
 from tkinter import SE
 import pygame, math
+import random
 
 
 class Button:
@@ -27,18 +28,19 @@ class Character:
         self.speed = speed
         self.colour = colour
         self.direction = 'up'
+        self.speed_diagonal = speed / math.sqrt(2)
 
 
     def directional_check(self):
-        direction = self.direction
-        if direction == 'up':
-            self.colour = (0,255,0)
-        elif direction == 'down':
-            self.colour = (255,0,0)
-        elif direction == 'left':
-            self.colour = (0,0,255)
-        elif direction == 'right':
-            self.colour = (255,255,0)
+            direction = self.direction
+            if direction == 'up':
+                self.colour = (0,255,0)
+            elif direction == 'down':
+                self.colour = (255,0,0)
+            elif direction == 'left':
+                self.colour = (0,0,255)
+            elif direction == 'right':
+                self.colour = (255,255,0)
 
     def draw(self, surface):
         self.directional_check()
@@ -57,39 +59,34 @@ class Player(Character):
 
     def move(self, dt, k):
 
-
-        #normalising movement so diagonal isnt faster
-        if (k[pygame.K_w] or k[pygame.K_s]) and (k[pygame.K_a] or k[pygame.K_d]):
-            self.speed = 180
+        if k[pygame.K_LSHIFT]:
+            dash = 2
         else:
-                self.speed = 250
+            dash = 1
+
+
+        if (k[pygame.K_w] or k[pygame.K_s]) and (k[pygame.K_a] or k[pygame.K_d]):
+            self.speed = self.speed_diagonal
+        else:
+            self.speed = self.speed_diagonal * math.sqrt(2)
         
         if k[pygame.K_w] and self.y > 5:
-            self.y -= self.speed * dt
+            self.y -= self.speed * dt * dash
             self.direction = 'up'
 
         if k[pygame.K_s] and self.y < 715:
-            self.y += self.speed * dt
+            self.y += self.speed * dt * dash
             self.direction = 'down'
 
         if k[pygame.K_a] and self.x > 5:
-            self.x -= self.speed * dt
+            self.x -= self.speed * dt * dash
             self.direction = 'left'   
 
         if k[pygame.K_d] and self.x < 1275:
-            self.x += self.speed * dt
+            self.x += self.speed * dt * dash
             self.direction = 'right'
 
-       #code for a dash that triggers for a second when left shift is 
-        if k[pygame.K_LSHIFT]:
-            if self.direction == 'up' and self.y > 20:
-                self.y -= self.speed * 2 * dt
-            if self.direction == 'down' and self.y < 700:
-                self.y += self.speed * 2 * dt
-            if self.direction == 'left' and self.x > 20:
-                self.x -= self.speed * 2 * dt
-            if self.direction == 'right' and self.x < 1260:
-                self.x += self.speed * 2 * dt
+
 
 
     def weapon_rotate(self, SCREEN):
@@ -112,7 +109,6 @@ class Enemy(Character):
         super().__init__(*args)
 
 
-
     def track(self, tracking, dt, enemies):
         dx = tracking.x - self.x
         dy = tracking.y - self.y
@@ -123,7 +119,10 @@ class Enemy(Character):
             # Normalize direction to player
             nx = dx / distance
             ny = dy / distance
-
+            if abs(nx) > abs(ny):
+                self.direction = 'right' if nx > 0 else 'left'
+            else:
+                self.direction = 'down' if ny > 0 else 'up'
             # --- Avoid other enemies ---
             sep_x, sep_y = 0, 0
             for other in enemies:
@@ -132,15 +131,21 @@ class Enemy(Character):
                 ox = self.x - other.x
                 oy = self.y - other.y
                 dist2 = ox**2 + oy**2
-                if dist2 < 80**2:  # 40 px "personal space"
+                if dist2 < 100**2:  # personal space radius
                     dist = dist2 ** 0.5
-                    # Push away more strongly the closer they are
-                    sep_x += ox / dist
-                    sep_y += oy / dist
+                    if dist > 0:
+                        # Scale push by closeness (closer = stronger push)
+                        strength = 1 - (dist / 100.0)
+                        sep_x += (ox / dist) * strength
+                        sep_y += (oy / dist) * strength
 
             # Combine seek + separation
             move_x = nx + sep_x
             move_y = ny + sep_y
+
+
+            move_x += random.uniform(-0.1, 0.1)
+            move_y += random.uniform(-0.1, 0.1)
 
             # Normalize combined vector
             mag = (move_x**2 + move_y**2) ** 0.5
@@ -148,8 +153,13 @@ class Enemy(Character):
                 move_x /= mag
                 move_y /= mag
 
+            # --- Distance-based speed scaling ---
+            # Closer = faster, farther = slower
+            # Clamp factor so they never fully stop
+            speed_factor = max(0.2, min(1.0, (400 - distance) / 400.0))
+
             # Apply movement
-            self.x += move_x * self.speed * dt
-            self.y += move_y * self.speed * dt
+            self.x += move_x * self.speed * speed_factor * dt
+            self.y += move_y * self.speed * speed_factor * dt
         else:
             return False
