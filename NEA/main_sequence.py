@@ -5,6 +5,7 @@ from re import S
 import pygame, sys, pytmx
 from classes import *
 from random import randint
+import os
 pygame.init()
 
 SCREEN = pygame.display.set_mode((1280, 720))
@@ -87,15 +88,6 @@ def handle_menu(num):
 
 
 
-player = Player("Player", 640, 360,  100, 10, 5, 250, (14,60,190))
-enemies = []
-for i in range(100):
-    enemy = Enemy(f"Enemy {i+1}", randint(0,1280), randint(0,720), 50, 5, 2, 200,(255,0,0))
-    enemies.append(enemy)
-
-
-characters = [player, enemies]    
-
 
 def play():
     clock.tick(FPS)
@@ -116,14 +108,23 @@ def play():
 
 
         k = pygame.key.get_pressed()
+
+
         player.move(dt ,k)
+
+
         player.meelee(k, SCREEN)
+
+
+        player.draw(SCREEN)
+
+
         for enemy in enemies:
             enemy.track(player, dt, enemies)
             enemy.draw(SCREEN)
 
 
-        player.draw(SCREEN)
+
              
 
 
@@ -193,6 +194,9 @@ def main_menu():
     pygame.quit()
     sys.exit()
 
+def character_select():
+    pass
+
 
 def start_screen():
     pygame.display.set_caption("Start Screen")
@@ -211,4 +215,23 @@ def start_screen():
         SCREEN.blit(text, text_rect)
         pygame.display.flip()
 start_screen()
+character_select()
+
+
+player = Player("Player", 640, 360,  100, 10, 5, 250, "Assets\characters\Male\Male 01-1.png")
+enemies = []
+files = [f for f in os.listdir('Assets/characters/Enemy') if f.endswith(".png")]
+
+for i in range (len(files)-1):
+    files[i] = 'Assets\characters\Enemy/' + files[i]
+
+
+for i in range(4):
+    enemy = Enemy(f"Enemy {i+1}", randint(0,1280), randint(0,720), 50, 5, 2, 200,random.choice(files))
+    enemies.append(enemy)
+
+
+characters = [player, enemies]    
+
+
 main_menu()

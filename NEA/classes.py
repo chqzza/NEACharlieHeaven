@@ -1,8 +1,10 @@
+
 from calendar import c
-from msvcrt import kbhit
-from tkinter import SE
 import pygame, math
 import random
+
+
+
 
 
 class Button:
@@ -17,7 +19,7 @@ class Button:
 
 
 class Character:
-    def __init__(self, name , x, y, hp_max, attack, defence, speed, colour):
+    def __init__(self, name , x, y, hp_max, attack, defence, speed, spritesheet):
         self.name = name
         self.x = x
         self.y = y
@@ -26,9 +28,31 @@ class Character:
         self.attack = attack
         self.defence = defence
         self.speed = speed
-        self.colour = colour
+        self.spritesheet = spritesheet
         self.direction = 'up'
         self.speed_diagonal = speed / math.sqrt(2)
+
+    def animation(self):
+        sheet = pygame.image.load(self.spritesheet).convert_alpha()
+        frames = []
+        if self.direction == 'down':
+            for i in range (3):
+                frame = sheet.subsurface(pygame.Rect(i*32, 0, 32, 32))
+                frames.append(frame)
+        elif self.direction == 'left':
+            for i in range (3):
+                frame = sheet.subsurface(pygame.Rect(i*32, 32, 32, 32))
+                frames.append(frame)
+        elif self.direction == 'right':
+            for i in range (3):
+                frame = sheet.subsurface(pygame.Rect(i*32, 64, 32, 32))
+                frames.append(frame)
+        elif self.direction == 'up':
+            for i in range (3):
+                frame = sheet.subsurface(pygame.Rect(i*32, 96, 32, 32))
+                frames.append(frame)
+        return frames
+        
 
 
     def directional_check(self):
@@ -44,8 +68,10 @@ class Character:
 
     def draw(self, surface):
         self.directional_check()
-        pygame.draw.circle(surface, (0,0,0), (int(self.x), int(self.y)), 12)
-        pygame.draw.circle(surface, self.colour, (int(self.x), int(self.y)), 10)
+        frames = self.animation()
+        for frame in frames:
+            surface.blit(frame, (self.x, self.y))
+
 
 
 class Player(Character):
@@ -89,16 +115,12 @@ class Player(Character):
 
 
 
-    def weapon_rotate(self, SCREEN):
-        #Make code that rotates about the player in a circle 
-        weapon_x, weapon_y = self.x, self.y -6
-        weapon = (weapon_x, weapon_y, 40,10)
-        pygame.draw.rect(SCREEN, (255,0,0), weapon)
+
 
     def meelee(self, k, SCREEN):
         if k[pygame.K_SPACE]:
             pygame.draw.circle(SCREEN, (255,255,0), (int(self.x), int(self.y)), 20, 2)
-            self.weapon_rotate(SCREEN)
+
 
     
 
