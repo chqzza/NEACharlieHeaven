@@ -91,9 +91,10 @@ def handle_menu(num):
 
 def play():
     clock.tick(FPS)
-
+    px, py = 0,0
     pygame.display.set_caption("Play")
     running = True
+    cycle = 0
     while running:
         SCREEN.fill(DARK_GRAY)
         for event in pygame.event.get():
@@ -115,18 +116,24 @@ def play():
 
         player.meelee(k, SCREEN)
 
-
-        player.draw(SCREEN)
+        # only cycle when moving    
+        if px == player.x and py == player.y:
+            player.draw(SCREEN, 1)
+        else:
+            player.draw(SCREEN, cycle)
 
 
         for enemy in enemies:
             enemy.track(player, dt, enemies)
-            enemy.draw(SCREEN)
+            enemy.draw(SCREEN,cycle)
 
 
-
+        if cycle <2:
+            cycle +=1
+        else: 
+            cycle = 0
              
-
+        px, py = player.x, player.y
 
 
         

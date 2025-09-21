@@ -38,18 +38,22 @@ class Character:
         if self.direction == 'down':
             for i in range (3):
                 frame = sheet.subsurface(pygame.Rect(i*32, 0, 32, 32))
+                frame = pygame.transform.scale(frame, (64, 64))
                 frames.append(frame)
         elif self.direction == 'left':
             for i in range (3):
                 frame = sheet.subsurface(pygame.Rect(i*32, 32, 32, 32))
+                frame = pygame.transform.scale(frame, (64, 64))
                 frames.append(frame)
         elif self.direction == 'right':
             for i in range (3):
                 frame = sheet.subsurface(pygame.Rect(i*32, 64, 32, 32))
+                frame = pygame.transform.scale(frame, (64, 64))
                 frames.append(frame)
         elif self.direction == 'up':
             for i in range (3):
                 frame = sheet.subsurface(pygame.Rect(i*32, 96, 32, 32))
+                frame = pygame.transform.scale(frame, (64, 64))
                 frames.append(frame)
         return frames
         
@@ -66,11 +70,11 @@ class Character:
             elif direction == 'right':
                 self.colour = (255,255,0)
 
-    def draw(self, surface):
+    def draw(self, surface, cycle):
         self.directional_check()
         frames = self.animation()
-        for frame in frames:
-            surface.blit(frame, (self.x, self.y))
+
+        surface.blit(frames[cycle], (self.x -32, self.y-32))
 
 
 
@@ -137,7 +141,7 @@ class Enemy(Character):
         distance_squared = dx**2 + dy**2
         distance = distance_squared ** 0.5
 
-        if 25 < distance < 400:
+        if 50 < distance < 400:
             # Normalize direction to player
             nx = dx / distance
             ny = dy / distance
