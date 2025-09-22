@@ -125,7 +125,11 @@ def play():
 
         for enemy in enemies:
             enemy.track(player, dt, enemies)
-            enemy.draw(SCREEN,cycle)
+            if enemy.tracking:
+
+                enemy.draw(SCREEN,cycle)
+            else:
+                enemy.draw(SCREEN,1)
 
 
         if cycle <2:
