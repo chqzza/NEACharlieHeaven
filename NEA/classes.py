@@ -31,30 +31,19 @@ class Character:
         self.spritesheet = spritesheet
         self.direction = 'up'
         self.speed_diagonal = speed / math.sqrt(2)
+        self.frames = self.animation()
+
 
     def animation(self):
         sheet = pygame.image.load(self.spritesheet).convert_alpha()
-        frames = []
-        if self.direction == 'down':
-            for i in range (3):
-                frame = sheet.subsurface(pygame.Rect(i*32, 0, 32, 32))
+        frames = [[],[],[],[]]
+
+        for i in range (4):
+            for j in range(3):
+                frame = sheet.subsurface(pygame.Rect(j*32, i*32, 32, 32))
                 frame = pygame.transform.scale(frame, (64, 64))
-                frames.append(frame)
-        elif self.direction == 'left':
-            for i in range (3):
-                frame = sheet.subsurface(pygame.Rect(i*32, 32, 32, 32))
-                frame = pygame.transform.scale(frame, (64, 64))
-                frames.append(frame)
-        elif self.direction == 'right':
-            for i in range (3):
-                frame = sheet.subsurface(pygame.Rect(i*32, 64, 32, 32))
-                frame = pygame.transform.scale(frame, (64, 64))
-                frames.append(frame)
-        elif self.direction == 'up':
-            for i in range (3):
-                frame = sheet.subsurface(pygame.Rect(i*32, 96, 32, 32))
-                frame = pygame.transform.scale(frame, (64, 64))
-                frames.append(frame)
+                frames[i].append(frame)
+
         return frames
         
 
@@ -62,19 +51,25 @@ class Character:
     def directional_check(self):
             direction = self.direction
             if direction == 'up':
-                self.colour = (0,255,0)
+                return 3
             elif direction == 'down':
-                self.colour = (255,0,0)
+                return 0 
             elif direction == 'left':
-                self.colour = (0,0,255)
+                return 1 
             elif direction == 'right':
-                self.colour = (255,255,0)
+                return 2
 
     def draw(self, surface, cycle):
-        self.directional_check()
-        frames = self.animation()
+        index = self.directional_check()
 
-        surface.blit(frames[cycle], (self.x -32, self.y-32))
+
+        if self.__class__ == Enemy and self.tracking == False:
+
+            for i in range (120):
+                surface.blit(self.frames[index][cycle], (self.x -32, self.y-32))
+        else:
+             for i in range (120):
+                surface.blit(self.frames[index][cycle], (self.x -32, self.y-32))
 
 
 
@@ -133,6 +128,7 @@ class Player(Character):
 class Enemy(Character):
     def __init__(self,*args):
         super().__init__(*args)
+        self.tracking = False
 
 
     def track(self, tracking, dt, enemies):
@@ -140,9 +136,10 @@ class Enemy(Character):
         dy = tracking.y - self.y
         distance_squared = dx**2 + dy**2
         distance = distance_squared ** 0.5
-
+        self.tracking = False
         if 50 < distance < 400:
             # Normalize direction to player
+            self.tracking = True
             nx = dx / distance
             ny = dy / distance
             if abs(nx) > abs(ny):
@@ -170,8 +167,8 @@ class Enemy(Character):
             move_y = ny + sep_y
 
 
-            move_x += random.uniform(-0.1, 0.1)
-            move_y += random.uniform(-0.1, 0.1)
+            #move_x += random.uniform(-0.1, 0.1)
+            #move_y += random.uniform(-0.1, 0.1)
 
             # Normalize combined vector
             mag = (move_x**2 + move_y**2) ** 0.5

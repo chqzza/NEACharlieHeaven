@@ -95,6 +95,7 @@ def play():
     pygame.display.set_caption("Play")
     running = True
     cycle = 0
+    delay = 0
     while running:
         SCREEN.fill(DARK_GRAY)
         for event in pygame.event.get():
@@ -125,13 +126,22 @@ def play():
 
         for enemy in enemies:
             enemy.track(player, dt, enemies)
-            enemy.draw(SCREEN,cycle)
+            if enemy.tracking:
+
+                enemy.draw(SCREEN,cycle)
+            else:
+                enemy.draw(SCREEN,1)
 
 
         if cycle <2:
-            cycle +=1
+            if delay < 20:
+                delay+=1
+            if delay >= 20:
+                cycle +=1
+                delay = 0
         else: 
             cycle = 0
+         
              
         px, py = player.x, player.y
 
