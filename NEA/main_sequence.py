@@ -40,6 +40,15 @@ selection_box = pygame.Rect(510, selection_y, 260, 110)
 
 menu_buttons = [play_button, options_button, quit_button]
 
+change_character = Button((515, 430, 250, 100), BUTTON_COLOR)
+
+
+
+
+
+
+option_buttons = [change_character]
+
 def selection_up():
     global selection_y
     global selection_box
@@ -75,6 +84,12 @@ def draw_health_bar(surface, x, y, current_health, max_health):
     pygame.draw.rect(surface, (0, 255, 0), fill_rect)
     pygame.draw.rect(surface, WHITE, outline_rect, 2)
 
+
+def character_select():
+
+
+
+
 def handle_menu(num):
     if selected == 0:
 
@@ -85,6 +100,9 @@ def handle_menu(num):
         pygame.quit()
         sys.exit()
 
+def handle_options(num):
+    if selected == 0:
+        character_select()
 
 
 
@@ -166,8 +184,16 @@ def options():
         SCREEN.fill(DARK_GRAY)
         font = get_font(40)
         text = font.render("Options Screen - Press ESC to return to menu", True, WHITE)
-        text_rect = text.get_rect(center=(640, 360))
+        text_rect = text.get_rect(center=(640, 20))
         SCREEN.blit(text, text_rect)
+
+        draw_buttons(SCREEN, option_buttons)
+        change_text = font.render("Change Character", True, WHITE)
+        SCREEN.blit(change_text, change_text.get_rect(center=change_character.pygame_rect.center))
+
+
+
+
         pygame.display.flip()
 
 
@@ -202,12 +228,14 @@ def main_menu():
         play_text = font.render("Play", True, WHITE)
         options_text = font.render("Options", True, WHITE)
         quit_text = font.render("Quit", True, WHITE)
+
         SCREEN.blit(play_text, play_text.get_rect(center=play_button.pygame_rect.center))
         SCREEN.blit(options_text, options_text.get_rect(center=options_button.pygame_rect.center))
         SCREEN.blit(quit_text, quit_text.get_rect(center=quit_button.pygame_rect.center))
 
 
         pygame.display.flip()
+
     pygame.quit()
     sys.exit()
 
@@ -235,7 +263,7 @@ start_screen()
 character_select()
 
 
-player = Player("Player", 640, 360,  100, 10, 5, 250, "Assets\characters\Male\Male 01-1.png")
+player = Player("Player", 640, 360,  100, 10, 5, 250, "Assets/characters/Animal/Cat 01-3.png")
 enemies = []
 files = [f for f in os.listdir('Assets/characters/Enemy') if f.endswith(".png")]
 

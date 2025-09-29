@@ -82,9 +82,13 @@ class Player(Character):
         self.level = 1
         self.experience = 0
 
+    def set_image(self, image_path):
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (64, 64))
+
     def move(self, dt, k):
 
-        if k[pygame.K_LSHIFT]:
+        if k[pygame.K_LSHIFT] :
             dash = 2
         else:
             dash = 1
