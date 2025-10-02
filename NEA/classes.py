@@ -171,8 +171,6 @@ class Enemy(Character):
             move_y = ny + sep_y
 
 
-            #move_x += random.uniform(-0.1, 0.1)
-            #move_y += random.uniform(-0.1, 0.1)
 
             # Normalize combined vector
             mag = (move_x**2 + move_y**2) ** 0.5

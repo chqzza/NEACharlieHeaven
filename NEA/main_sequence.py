@@ -45,7 +45,7 @@ character_changes = []
 
 for i in range(2):
     for j in range(4):
-        character_changes.append(Button((100 + j * 260, 100 + i * 260, 250, 250), BUTTON_COLOUR))
+        character_changes.append(Button((125 + j * 260, 100 + i * 260, 250, 250), BUTTON_COLOUR))
     
 options_buttons = [Button((515,100 + i *110, 250, 100),BUTTON_COLOUR ) for i in range(4) ]
 
@@ -168,18 +168,23 @@ def play():
 ### ~~~~ CHARACTER LIST - DISPLAY ALL IN MALE, FEMALE, XMAS and OTHER ~~~~ ###
 ## displays 8 squares at a time - needs to scroll through them all - total of  ~ 100 ##
 
-def char_select_up():
-        pass
-def char_select_down():
-        pass
-def char_select_left():
-        pass
-def char_select_right():
-        pass
+def char_select_box(direction, char_box):
+    if direction == 1 and char_box.y > 95:
+        char_box.y -= 260
+    elif direction == 2 and char_box.x < 900:
+        char_box.x += 260
+    elif direction == 3 and char_box.y < 355:
+        char_box.y += 260
+    elif direction == 4 and char_box.x > 120:
+        char_box.x -= 260
+
+    return char_box
+
+
 
 def character_select():
     running = True
-
+    char_box = pygame.Rect(120, 95, 260, 260)
     while running:
         pygame.display.set_caption("Character Select")      
         for event in pygame.event.get():
@@ -188,20 +193,23 @@ def character_select():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
-                elif event.key == pygame.K_s:
-                     char_select_down()
                 elif event.key == pygame.K_w:
-                     char_select_up()
-                elif event.key == pygame.K_a:
-                        char_select_right()
+                    char_box = char_select_box(1, char_box)
+
                 elif event.key == pygame.K_d:
-                        char_select_left()
+                     char_box = char_select_box(2, char_box)
+
+                elif event.key == pygame.K_s:
+                    char_box = char_select_box(3, char_box)
+
+                elif event.key == pygame.K_a:
+                    char_box = char_select_box(4, char_box)
 
                 elif event.key == pygame.K_SPACE:
-                    handle_options(selected)
+                    pass
 
         SCREEN.fill(DARK_GRAY)
-        pygame.draw.rect(SCREEN, RED, selection_box)
+        pygame.draw.rect(SCREEN, RED, char_box)
         draw_buttons(SCREEN, character_changes)
 
         text = font.render("Character Select - Press ESC to return to menu", True, WHITE)
@@ -335,7 +343,7 @@ for i in range (len(files)-1):
     files[i] = 'Assets\characters\Enemy/' + files[i]
 
 
-for i in range(10):
+for i in range(1):
     enemy = Enemy(f"Enemy {i+1}", randint(0,1280), randint(0,720), 50, 5, 2, 200,random.choice(files))
     enemies.append(enemy)
 
