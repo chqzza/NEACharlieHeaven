@@ -9,7 +9,7 @@ import os
 pygame.init()
 
 SCREEN = pygame.display.set_mode((1280, 720))
-pygame.display.set_caption("NEA")
+
 
 # Fps movement
 FPS = 120
@@ -18,11 +18,11 @@ dt = 0
 
 # Colors
 DARK_GRAY = (30, 30, 30)
-BUTTON_COLOR = (50, 50, 80)
-SELECTION_COLOR = (0, 255, 0) 
+BUTTON_COLOUR = (50, 50, 80)
+SELECTION_COLOUR = (0, 255, 0) 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-
+RED = (255, 0, 0)
 
 
 
@@ -30,24 +30,26 @@ selection_y = 95
 selected = 0
 
 
-play_button = Button((515, 100, 250, 100), BUTTON_COLOR)
+play_button = Button((515, 100, 250, 100), BUTTON_COLOUR)
 
-options_button = Button((515, 210, 250, 100), BUTTON_COLOR)
+options_button = Button((515, 210, 250, 100), BUTTON_COLOUR)
 
-quit_button = Button((515, 320, 250, 100), BUTTON_COLOR)
+quit_button = Button((515, 320, 250, 100), BUTTON_COLOUR)
 
 selection_box = pygame.Rect(510, selection_y, 260, 110)
 
 menu_buttons = [play_button, options_button, quit_button]
 
-change_character = Button((515, 430, 250, 100), BUTTON_COLOR)
+
+character_changes = []
+
+for i in range(2):
+    for j in range(4):
+        character_changes.append(Button((100 + j * 260, 100 + i * 260, 250, 250), BUTTON_COLOUR))
+    
+options_buttons = [Button((515,100 + i *110, 250, 100),BUTTON_COLOUR ) for i in range(4) ]
 
 
-
-
-
-
-option_buttons = [change_character]
 
 def selection_up():
     global selection_y
@@ -55,8 +57,8 @@ def selection_up():
     global selected 
     if selection_y > 95:
         selection_y -= 110
-    selection_box = pygame.Rect(510, selection_y, 260, 110)
-    selected -= 1
+        selection_box = pygame.Rect(510, selection_y, 260, 110)
+        selected -= 1
 
 def selection_down():
     global selection_y
@@ -64,8 +66,8 @@ def selection_down():
     global selected
     if selection_y < 320:
         selection_y += 110
-    selection_box = pygame.Rect(510, selection_y, 260, 110)
-    selected += 1
+        selection_box = pygame.Rect(510, selection_y, 260, 110)
+        selected += 1
 
 def draw_buttons(surface, buttons_list):
      for button in buttons_list:
@@ -73,7 +75,7 @@ def draw_buttons(surface, buttons_list):
 
 def get_font(size):
     return pygame.font.Font("assets/fonts/path.ttf", size)
-
+font = get_font(40)
 
 def draw_health_bar(surface, x, y, current_health, max_health):
     bar_width = 250
@@ -85,12 +87,8 @@ def draw_health_bar(surface, x, y, current_health, max_health):
     pygame.draw.rect(surface, WHITE, outline_rect, 2)
 
 
-def character_select():
 
-
-
-
-def handle_menu(num):
+def handle_menu():
     if selected == 0:
 
         play()
@@ -100,9 +98,6 @@ def handle_menu(num):
         pygame.quit()
         sys.exit()
 
-def handle_options(num):
-    if selected == 0:
-        character_select()
 
 
 
@@ -167,6 +162,59 @@ def play():
         
 
         pygame.display.flip()
+    pass
+
+
+### ~~~~ CHARACTER LIST - DISPLAY ALL IN MALE, FEMALE, XMAS and OTHER ~~~~ ###
+## displays 8 squares at a time - needs to scroll through them all - total of  ~ 100 ##
+
+def char_select_up():
+        pass
+def char_select_down():
+        pass
+def char_select_left():
+        pass
+def char_select_right():
+        pass
+
+def character_select():
+    running = True
+
+    while running:
+        pygame.display.set_caption("Character Select")      
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+                elif event.key == pygame.K_s:
+                     char_select_down()
+                elif event.key == pygame.K_w:
+                     char_select_up()
+                elif event.key == pygame.K_a:
+                        char_select_right()
+                elif event.key == pygame.K_d:
+                        char_select_left()
+
+                elif event.key == pygame.K_SPACE:
+                    handle_options(selected)
+
+        SCREEN.fill(DARK_GRAY)
+        pygame.draw.rect(SCREEN, RED, selection_box)
+        draw_buttons(SCREEN, character_changes)
+
+        text = font.render("Character Select - Press ESC to return to menu", True, WHITE)
+        text_rect = text.get_rect(center=(640, 20))
+
+        SCREEN.blit(text, text_rect)
+
+        pygame.display.flip()
+
+
+def handle_options():
+    if selected == 0:
+        character_select()
 
 
 
@@ -174,22 +222,37 @@ def play():
 def options():
     pygame.display.set_caption("Options")
     running = True
+
+
     while running:
+        pygame.display.set_caption("Options")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+
                     running = False
+                elif event.key == pygame.K_s:
+                     selection_down()
+
+
+                elif event.key == pygame.K_w:
+                     selection_up()
+
+
+                elif event.key == pygame.K_SPACE:
+                    handle_options()
+
         SCREEN.fill(DARK_GRAY)
-        font = get_font(40)
+
         text = font.render("Options Screen - Press ESC to return to menu", True, WHITE)
+
         text_rect = text.get_rect(center=(640, 20))
         SCREEN.blit(text, text_rect)
+        pygame.draw.rect(SCREEN, SELECTION_COLOUR, selection_box)
+        draw_buttons(SCREEN, options_buttons)
 
-        draw_buttons(SCREEN, option_buttons)
-        change_text = font.render("Change Character", True, WHITE)
-        SCREEN.blit(change_text, change_text.get_rect(center=change_character.pygame_rect.center))
 
 
 
@@ -200,7 +263,9 @@ def options():
 def main_menu():
     pygame.display.set_caption("Main Menu")
     running = True
+    
     while running:
+        pygame.display.set_caption("Main Menu")      
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -216,14 +281,14 @@ def main_menu():
 
 
                 elif event.key == pygame.K_SPACE:
-                    handle_menu(selected)
+                    handle_menu()
 
         SCREEN.fill(DARK_GRAY)
-        pygame.draw.rect(SCREEN, SELECTION_COLOR, selection_box)
+        pygame.draw.rect(SCREEN, SELECTION_COLOUR, selection_box)
         draw_buttons(SCREEN, menu_buttons)
 
         # Draw button text
-        font = get_font(40)
+
 
         play_text = font.render("Play", True, WHITE)
         options_text = font.render("Options", True, WHITE)
@@ -239,8 +304,6 @@ def main_menu():
     pygame.quit()
     sys.exit()
 
-def character_select():
-    pass
 
 
 def start_screen():
@@ -254,16 +317,17 @@ def start_screen():
                 if event.key == pygame.K_SPACE:
                     running = False
         SCREEN.fill(DARK_GRAY)
-        font = get_font(40)
+
         text = font.render("Press Space to start", True, WHITE)
         text_rect = text.get_rect(center=(640, 360))
         SCREEN.blit(text, text_rect)
         pygame.display.flip()
+
 start_screen()
-character_select()
 
 
-player = Player("Player", 640, 360,  100, 10, 5, 250, "Assets/characters/Animal/Cat 01-3.png")
+
+player = Player("Player", 640, 360,  100, 10, 5, 250, "Assets/characters/Male/Male 07-2.png")
 enemies = []
 files = [f for f in os.listdir('Assets/characters/Enemy') if f.endswith(".png")]
 
@@ -271,7 +335,7 @@ for i in range (len(files)-1):
     files[i] = 'Assets\characters\Enemy/' + files[i]
 
 
-for i in range(4):
+for i in range(10):
     enemy = Enemy(f"Enemy {i+1}", randint(0,1280), randint(0,720), 50, 5, 2, 200,random.choice(files))
     enemies.append(enemy)
 
